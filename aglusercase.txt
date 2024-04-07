@@ -1,0 +1,8 @@
+-Créer des bases de données :
+permettre l'utilisateur final de pouvoir créer de nouvelles bases de données afin de commencer à stocker et organiser ses données dès le début de l'utilisation de l'application.
+
+-Inserer des données :
+Permettre à l'utilisateur final d'insérer des données dans les tables nouvellement créées. 
+
+Faire des requêtes SQL :
+L'utilisateur final doit être en mesure d'exécuter des requêtes SQL pour interroger les données stockées dans la base de données.

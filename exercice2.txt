@@ -1,0 +1,97 @@
+1. Définition du service en WSDL :
+
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/">
+  <service name="HotelService">
+     <port name="HotelPort" binding="tns:HotelBinding">
+       <soap:address location="http://www.votre-hotel.com/service"/>
+     </port>
+  </service>
+
+
+<binding name="HotelBinding" type="tns:HotelPortType">
+  <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+  <operation name="rechercherChambres">
+    <soap:operation soapAction="http://www.votre-hotel.com/rechercherChambres"/>
+    <input><soap:body use="literal"/></input>
+    <output><soap:body use="literal"/></output>
+  </operation>
+
+  <operation name="reserverChambre">
+      <soap:operation soapAction="http://www.votre-hotel.com/reserverChambre"/>
+      <input><soap:body use="literal"/></input>
+      <output><soap:body use="literal"/></output>
+    </operation>
+</binding>
+
+
+<portType name="HotelPortType">
+  <operation name="rechercherChambres">
+    <input message="tns:RechercheMessage"/>
+    <output message="tns:DetailsChambres"/>
+  </operation>
+</portType>
+
+<message name="RechercheMessage">
+       <part name="date" type="xsd:date"/>
+       <part name="ville" type="xsd:string"/>
+</message>
+
+<message name="DetailsChambresMessage">
+        <part name="chambresDisponibles" type="xsd:string"/>
+</message>
+<message name="ReservationMessage">
+    <part name="idChambre" type="xsd:int"/>
+    <part name="dateDebut" type="xsd:date"/>
+    <part name="dateFin" type="xsd:date"/>
+    <part name="informationsClient" type="xsd:string"/>
+  </message>
+
+  <message name="ConfirmationMessage">
+    <part name="confirmation" type="xsd:string"/>
+</definitions>
+
+
+
+2. Requête SOAP:
+
+
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://schemas.xmlsoap.org/soap/encoding/">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <tns:rechercherChambres xmlns="http://schemas.xmlsoap.org/wsdl/">
+         <date>2024-03-15</date>
+         <ville>Tunis</ville>
+      </tns:rechercherChambres>
+   </soapenv:Body>
+</soapenv:Envelope>
+
+
+
+3. Réponse SOAP:
+
+
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tns="http://example.com/reservation">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <tns:DetailsChambresMessage>
+         <chambresDisponibles>
+            <chambre>
+               <id>123</id>
+               <type>Suite</type>
+               <prix>200</prix>
+               <disponibilite>Disponible</disponibilite>
+            </chambre>
+            <chambre>
+               <id>456</id>
+               <type>Chambre Simple</type>
+               <prix>100</prix>
+               <disponibilite>Disponible</disponibilite>
+            </chambre>
+         </chambresDisponibles>
+      </tns:DetailsChambresMessage>
+   </soapenv:Body>
+</soapenv:Envelope>
+
+  
+
+

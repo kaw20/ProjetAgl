@@ -1,0 +1,508 @@
+package tn.esprit.models;
+
+import java.util.Date;
+import java.util.List;
+
+public class Project {
+    private int idProjet;
+    private String nom;
+    private String description;
+    private Date dateDebut;
+    private Date dateFin;
+    private String status;
+    private String categorie;
+    private List<Project> projects;
+
+    public Project(int idProjet , String nom , String description , Date dateDebut , Date dateFin , String status , String categorie , List<Project> projects ) {
+            this.idProjet = idProjet;
+            this.nom = nom;
+            this.description = description;
+            this.dateDebut = dateDebut;
+            this.dateFin = dateFin;
+            this.status = status;
+            this.categorie = categorie;
+            this.projects = projects;
+
+    }
+
+        public int getIdProjet() {
+            return idProjet;
+        }
+
+        public void setIdProjet(int idProjet) {
+            this.idProjet = idProjet;
+        }
+
+        public String getNom() {
+            return nom;
+        }
+
+        public void setNom(String nom) {
+            this.nom = nom;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public Date getDateDebut() {
+            return dateDebut;
+        }
+
+        public void setDateDebut(Date dateDebut) {
+            this.dateDebut = dateDebut;
+        }
+
+        public Date getDateFin() {
+            return dateFin;
+        }
+
+        public void setDateFin(Date dateFin) {
+            this.dateFin = dateFin;
+        }
+
+        public String getStatus() {
+            return status;
+        }
+
+        public void setStatus(String status) {
+            this.status = status;
+        }
+
+        public String getCategorie() {
+            return categorie;
+        }
+
+        public void setCategorie(String categorie) {
+            this.categorie = categorie;
+        }
+
+        public List<Project> getprojects() {
+            return projects;
+    }
+
+    public void setprojects(List<Project> projects) {
+        this.projects = projects;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Project{" +
+                "idProjet=" + idProjet +
+                ", nom='" + nom + '\'' +
+                ", description='" + description + '\'' +
+                ", dateDebut=" + dateDebut +
+                ", dateFin=" + dateFin +
+                ", status='" + status + '\'' +
+                ", categorie='" + categorie + '\'' +
+                '}';
+    }
+
+    public void addProject(Project project) {
+        projects.add(project);
+    }
+
+    public void removeProject(int projectId) {
+        Iterator<Project> iterator = projects.iterator();
+        while (iterator.hasNext()) {
+            Project project = iterator.next();
+            if (project.getIdProjet() == projectId) {
+                iterator.remove();
+                break;
+            }
+        }
+    }
+
+    public void updateProject(int projectId, Project updatedProject) {
+        for (int i = 0; i < projects.size(); i++) {
+            if (projects.get(i).getIdProjet() == projectId) {
+                projects.set(i, updatedProject);
+                break;
+            }
+        }
+    }
+}
+
+
+Models
+Document 
+
+package tn.esprit.models;
+
+public class Document {
+    private int idDoc;
+    private double budget;
+    private String risque;
+    private String dependence;
+
+    public Document() {
+        this.idDoc = idDoc;
+        this.budget = budget;
+        this.risque = risque;
+        this.dependence = dependence;
+    }
+
+    public int getIdDoc() {
+        return idDoc;
+    }
+
+    public void setIdDoc(int idDoc) {
+        this.idDoc = idDoc;
+    }
+
+    public double getBudget() {
+        return budget;
+    }
+
+    public void setBudget(double budget) {
+        this.budget = budget;
+    }
+
+    public String getRisque() {
+        return risque;
+    }
+
+    public void setRisque(String risque) {
+        this.risque = risque;
+    }
+
+    public String getDependence() {
+        return dependence;
+    }
+
+    public void setDependence(String dependence) {
+        this.dependence = dependence;
+    }
+}
+
+// Service pour la classe Projet
+package tn.esprit.services;
+
+import tn.esprit.Utils.MaConnexion;
+import tn.esprit.models.Projet;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ProjetService {
+    Connection cnx;
+
+    public ProjetService() {
+        MaConnexion m = new MaConnexion();
+        cnx = m.getCnx();
+    }
+
+    public void addProjet(Projet projet) {
+        String qry = "INSERT INTO projet`(nom`, description, dateDebut, dateFin, status, categorie) VALUES (?,?,?,?,?,?)";
+        try {
+            PreparedStatement pstm = cnx.prepareStatement(qry);
+            pstm.setString(1, projet.getNom());
+            pstm.setString(2, projet.getDescription());
+            pstm.setDate(3, new java.sql.Date(projet.getDateDebut().getTime()));
+            pstm.setDate(4, new java.sql.Date(projet.getDateFin().getTime()));
+            pstm.setString(5, projet.getStatus());
+            pstm.setString(6, projet.getCategorie());
+            pstm.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public List<Projet> getAllProjets() {
+        ArrayList<Projet> projets = new ArrayList<>();
+        String qry = "SELECT * FROM projet";
+        try {
+            Statement stm = cnx.createStatement();
+            ResultSet rs = stm.executeQuery(qry);
+            while (rs.next()) {
+                Projet p = new Projet();
+                p.setIdProjet(rs.getInt("idProjet"));
+                p.setNom(rs.getString("nom"));
+                p.setDescription(rs.getString("description"));
+                p.setDateDebut(rs.getDate("dateDebut"));
+                p.setDateFin(rs.getDate("dateFin"));
+                p.setStatus(rs.getString("status"));
+                p.setCategorie(rs.getString("categorie"));
+                projets.add(p);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return projets;
+    }
+
+    public void updateProjet(Projet projet) {
+        String qry = "UPDATE projet SET nom`=?,description`=?,`dateDebut`=?,`dateFin`=?,`status`=?,`categorie`=? WHERE `idProjet`=?";
+        try {
+            PreparedStatement pstm = cnx.prepareStatement(qry);
+            pstm.setString(1, projet.getNom());
+            pstm.setString(2, projet.getDescription());
+            pstm.setDate(3, new java.sql.Date(projet.getDateDebut().getTime()));
+            pstm.setDate(4, new java.sql.Date(projet.getDateFin().getTime()));
+            pstm.setString(5, projet.getStatus());
+            pstm.setString(6, projet.getCategorie());
+            pstm.setInt(7, projet.getIdProjet());
+            pstm.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void deleteProjet(int idProjet) {
+        String qry = "DELETE FROM projet WHERE `idProjet`=?";
+        try {
+            PreparedStatement pstm = cnx.prepareStatement(qry);
+            pstm.setInt(1, idProjet);
+            pstm.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+}
+
+// Service pour la classe Document
+package tn.esprit.services;
+
+import tn.esprit.Utils.MaConnexion;
+import tn.esprit.models.Document;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class DocumentService {
+    Connection cnx;
+
+    public DocumentService() {
+        MaConnexion m = new MaConnexion();
+        cnx = m.getCnx();
+    }
+
+    public void addDocument(Document document) {
+        String qry = "INSERT INTO document`(budget`, risque, dependence) VALUES (?,?,?)";
+        try {
+            PreparedStatement pstm = cnx.prepareStatement(qry);
+            pstm.setDouble(1, document.getBudget());
+            pstm.setString(2, document.getRisque());
+            pstm.setString(3, document.getDependence());
+            pstm.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public List<Document> getAllDocuments() {
+        ArrayList<Document> documents = new ArrayList<>();
+        String qry = "SELECT * FROM document";
+        try {
+            Statement stm = cnx.createStatement();
+            ResultSet rs = stm.executeQuery(qry);
+            while (rs.next()) {
+                Document d = new Document();
+                d.setIdDoc(rs.getInt("idDoc"));
+                d.setBudget(rs.getDouble("budget"));
+                d.setRisque(rs.getString("risque"));
+                d.setDependence(rs.getString("dependence"));
+                documents.add(d);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return documents;
+    }
+
+    public void updateDocument(Document document) {
+        String qry = "UPDATE document SET budget`=?,risque`=?,`dependence`=? WHERE `idDoc`=?";
+        try {
+            PreparedStatement pstm = cnx.prepareStatement(qry);
+            pstm.setDouble(1, document.getBudget());
+            pstm.setString(2, document.getRisque());
+            pstm.setString(3, document.getDependence());
+            pstm.setInt(4, document.getIdDoc());
+            pstm.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void deleteDocument(int idDoc) {
+        String qry = "DELETE FROM document WHERE `idDoc`=?";
+        try {
+            PreparedStatement pstm = cnx.prepareStatement(qry);
+            pstm.setInt(1, idDoc);
+            pstm.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+}
+
+// Contrôleur pour la classe Projet
+package tn.esprit.services;
+
+import tn.esprit.Utils.MaConnexion;
+import tn.esprit.models.Projet;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ProjetService {
+    Connection cnx;
+
+    public ProjetService() {
+        MaConnexion m = new MaConnexion();
+        cnx = m.getCnx();
+    }
+
+    public void addProjet(Projet projet) {
+        String qry = "INSERT INTO projet`(nom`, description, dateDebut, dateFin, status, categorie) VALUES (?,?,?,?,?,?)";
+        try {
+            PreparedStatement pstm = cnx.prepareStatement(qry);
+            pstm.setString(1, projet.getNom());
+            pstm.setString(2, projet.getDescription());
+            pstm.setDate(3, new java.sql.Date(projet.getDateDebut().getTime()));
+            pstm.setDate(4, new java.sql.Date(projet.getDateFin().getTime()));
+            pstm.setString(5, projet.getStatus());
+            pstm.setString(6, projet.getCategorie());
+            pstm.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public List<Projet> getAllProjets() {
+        ArrayList<Projet> projets = new ArrayList<>();
+        String qry = "SELECT * FROM projet";
+        try {
+            Statement stm = cnx.createStatement();
+            ResultSet rs = stm.executeQuery(qry);
+            while (rs.next()) {
+                Projet p = new Projet();
+                p.setIdProjet(rs.getInt("idProjet"));
+                p.setNom(rs.getString("nom"));
+                p.setDescription(rs.getString("description"));
+                p.setDateDebut(rs.getDate("dateDebut"));
+                p.setDateFin(rs.getDate("dateFin"));
+                p.setStatus(rs.getString("status"));
+                p.setCategorie(rs.getString("categorie"));
+                projets.add(p);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return projets;
+    }
+
+    public void updateProjet(Projet projet) {
+        String qry = "UPDATE projet SET nom`=?,description`=?,`dateDebut`=?,`dateFin`=?,`status`=?,`categorie`=? WHERE `idProjet`=?";
+        try {
+            PreparedStatement pstm = cnx.prepareStatement(qry);
+            pstm.setString(1, projet.getNom());
+            pstm.setString(2, projet.getDescription());
+            pstm.setDate(3, new java.sql.Date(projet.getDateDebut().getTime()));
+            pstm.setDate(4, new java.sql.Date(projet.getDateFin().getTime()));
+            pstm.setString(5, projet.getStatus());
+            pstm.setString(6, projet.getCategorie());
+            pstm.setInt(7, projet.getIdProjet());
+            pstm.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void deleteProjet(int idProjet) {
+        String qry = "DELETE FROM projet WHERE `idProjet`=?";
+        try {
+            PreparedStatement pstm = cnx.prepareStatement(qry);
+            pstm.setInt(1, idProjet);
+            pstm.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+}
+
+
+// Contrôleur pour la classe Document
+package tn.esprit.services;
+
+import tn.esprit.Utils.MaConnexion;
+import tn.esprit.models.Document;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class DocumentService {
+    Connection cnx;
+
+    public DocumentService() {
+        MaConnexion m = new MaConnexion();
+        cnx = m.getCnx();
+    }
+
+    public void addDocument(Document document) {
+        String qry = "INSERT INTO document`(budget`, risque, dependence) VALUES (?,?,?)";
+        try {
+            PreparedStatement pstm = cnx.prepareStatement(qry);
+            pstm.setDouble(1, document.getBudget());
+            pstm.setString(2, document.getRisque());
+            pstm.setString(3, document.getDependence());
+            pstm.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public List<Document> getAllDocuments() {
+        ArrayList<Document> documents = new ArrayList<>();
+        String qry = "SELECT * FROM document";
+        try {
+            Statement stm = cnx.createStatement();
+            ResultSet rs = stm.executeQuery(qry);
+            while (rs.next()) {
+                Document d = new Document();
+                d.setIdDoc(rs.getInt("idDoc"));
+                d.setBudget(rs.getDouble("budget"));
+                d.setRisque(rs.getString("risque"));
+                d.setDependence(rs.getString("dependence"));
+                documents.add(d);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return documents;
+    }
+
+    public void updateDocument(Document document) {
+        String qry = "UPDATE document SET budget`=?,risque`=?,`dependence`=? WHERE `idDoc`=?";
+        try {
+            PreparedStatement pstm = cnx.prepareStatement(qry);
+            pstm.setDouble(1, document.getBudget());
+            pstm.setString(2, document.getRisque());
+            pstm.setString(3, document.getDependence());
+            pstm.setInt(4, document.getIdDoc());
+            pstm.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void deleteDocument(int idDoc) {
+        String qry = "DELETE FROM document WHERE `idDoc`=?";
+        try {
+            PreparedStatement pstm = cnx.prepareStatement(qry);
+            pstm.setInt(1, idDoc);
+            pstm.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+}

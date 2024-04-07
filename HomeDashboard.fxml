@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="DashboardHomeController">
+    <children>
+        <TextField layoutX="20.0" layoutY="20.0" promptText="Rechercher un projet..." />
+
+        <ImageView layoutX="520.0" layoutY="20.0" fitHeight="32.0" fitWidth="32.0" preserveRatio="true">
+            <ImageView layoutX="520.0" layoutY="20.0" fitHeight="32.0" fitWidth="32.0" preserveRatio="true">
+                <Image url=C:\Users\Lenovo\Downloads\images.png />
+            </ImageView>
+
+        </ImageView>
+
+        <Label layoutX="560.0" layoutY="60.0" text="Nom Utilisateur" />
+
+        <ToggleGroup fx:id="toggleGroup" layoutX="20.0" layoutY="60.0">
+            <RadioButton text="Développement" selected="true" />
+            <RadioButton text="Marketing" />
+            <RadioButton text="Finance and Legalities" />
+            <RadioButton text="Autres" />
+        </ToggleGroup>
+
+        <Button layoutX="250.0" layoutY="60.0" text="Filtrer" onAction="#filtrerProjet" />
+
+        <!-- Autres éléments de l'interface -->
+    </children>
+</AnchorPane>
